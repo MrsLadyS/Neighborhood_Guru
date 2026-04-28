@@ -1,0 +1,9 @@
+Illustrative marketing images (AI-generated) for the 30-acre orchard & vineyard listing. Filenames match `listings.ts` and `supabase/seed.sql`. Commit these JPGs under `public/` so production builds serve them (missing files break the property card image). Replace with on-site photography when available; do not use for species or site survey without verification.
+
+  hero-ridgetop-view.jpg            — wide ridgeline / long-range valley vista
+  listing-mountaintop-view-catskills.jpg — listing-card-only preview (field to Catskills mountain ridges)
+  gallery-lookout-towers-birding.jpg — two wooden observation towers, birding context
+  gallery-fruit-salad-orchard.jpg   — mixed fruit orchard / pick-your-own mood
+  gallery-vineyard-rows.jpg         — Northeast-style vineyard rows
+  gallery-whitetail-deer.jpg        — whitetail buck, forest edge
+  gallery-wild-turkey.jpg            — wild turkey flock, upland margin

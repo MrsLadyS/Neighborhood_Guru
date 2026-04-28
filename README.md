@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Neighborhood Guru Property Management
 
-## Getting Started
+Production-ready Next.js app for:
+- property listings
+- tenant registration
+- rental period scheduling
+- availability protection (no double-booking)
 
-First, run the development server:
+## Local Setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Install dependencies:
+   - `npm install`
+2. Create `.env.local`:
+   - `NEXT_PUBLIC_SUPABASE_URL=https://tuxvxyayheosxduaogsj.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>`
+3. Start the app:
+   - `npm run dev`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Supabase Database Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+For an empty database, run:
+1. `supabase/schema.sql`
+2. `supabase/seed.sql` (optional starter data)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+For existing databases only, apply migration scripts from `supabase/migrations/` as needed.
 
-## Learn More
+## Pre-Launch Checks
 
-To learn more about Next.js, take a look at the following resources:
+Run before pushing/deploying:
+- `npm run check`
+- `npm run build`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`npm run check` includes:
+- ESLint
+- TypeScript no-emit typecheck
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## GitHub + Custom Domain Launch Checklist
 
-## Deploy on Vercel
+1. Push repository to GitHub.
+2. Import repo into your deployment platform (recommended: Vercel).
+3. Set environment variables in the deployment dashboard:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. Deploy and verify:
+   - `/`
+   - `/properties`
+   - `/schedule`
+   - `/register`
+   - `/pay`
+5. Connect custom domain in the deployment dashboard.
+6. Update DNS records at your domain registrar as instructed by the host.
+7. Confirm HTTPS certificate issuance and final domain routing.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Security Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `.env.local` is ignored by git.
+- RLS policies are included in schema/migrations.
+- Scheduling prevents overlapping bookings for the same property at both:
+  - application layer
+  - database constraint layer
