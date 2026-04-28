@@ -34,6 +34,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/products" className="text-[var(--brand-ink)] hover:underline">
+                Products
+              </Link>
+            </li>
+            <li>
               <Link href="/portal" className="text-[var(--brand-ink)] hover:underline">
                 Tenant portal
               </Link>

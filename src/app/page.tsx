@@ -14,6 +14,12 @@ const cards = [
     href: "/properties",
     cta: "View properties",
   },
+  {
+    title: "Products",
+    body: "Shop seasonal produce and harvest goods from our properties.",
+    href: "/products",
+    cta: "Visit marketplace",
+  },
 ];
 
 export default function Home() {
@@ -62,7 +68,7 @@ export default function Home() {
               View listings and submit your application—without hunting through email threads.
             </p>
           </div>
-          <ul className="mt-12 grid gap-6 md:grid-cols-2">
+          <ul className="mt-12 grid gap-6 md:grid-cols-3">
             {cards.map((c) => (
               <li
                 key={c.title}

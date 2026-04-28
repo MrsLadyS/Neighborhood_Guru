@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const items = [
   { href: "/properties", label: "Properties" },
+  { href: "/products", label: "Products" },
   { href: "/schedule", label: "Schedule" },
   { href: "/portal", label: "Tenant portal" },
 ] as const;
@@ -12,6 +13,7 @@ const items = [
 function linkActive(pathname: string | null, href: string): boolean {
   if (!pathname) return false;
   if (href === "/properties") return pathname === "/properties" || pathname.startsWith("/properties/");
+  if (href === "/products") return pathname === "/products" || pathname.startsWith("/products/");
   if (href === "/portal") return pathname === "/portal" || pathname.startsWith("/portal/");
   if (href === "/schedule") return pathname === "/schedule" || pathname.startsWith("/schedule/");
   return pathname === href;
