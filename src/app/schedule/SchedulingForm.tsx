@@ -1,12 +1,66 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
+import { useEffect } from "react";
+import Link from "next/link";
 import { submitScheduleRequest, type ScheduleState } from "@/app/actions/scheduling";
 import { BookingCalendar, toISODateLocal } from "@/components/booking/BookingCalendar";
 import { RENTAL_CONTACT_SLOTS } from "@/lib/constants";
 import type { Property } from "@/types/database";
 
 const initial: ScheduleState | null = null;
+const DRAFT_KEY = "scheduleFormDraftV1";
+const DRAFT_TTL_MS = 20 * 60 * 1000;
+
+type DraftValues = {
+  propertyId: string;
+  startDate: string;
+  endDate: string;
+  approvalCode: string;
+  stayType: string;
+  groupSize: string;
+  timeSlot: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  notes: string;
+};
+
+function loadDraftValues(): DraftValues {
+  const empty: DraftValues = {
+    propertyId: "",
+    startDate: "",
+    endDate: "",
+    approvalCode: "",
+    stayType: "",
+    groupSize: "1",
+    timeSlot: "",
+    fullName: "",
+    email: "",
+    phone: "",
+    notes: "",
+  };
+  if (typeof window === "undefined") return empty;
+  try {
+    const raw = window.localStorage.getItem(DRAFT_KEY);
+    if (!raw) return empty;
+    const parsed = JSON.parse(raw) as {
+      savedAt: number;
+      values: Partial<DraftValues>;
+    };
+    if (!parsed?.savedAt || Date.now() - parsed.savedAt > DRAFT_TTL_MS) {
+      window.localStorage.removeItem(DRAFT_KEY);
+      return empty;
+    }
+    return {
+      ...empty,
+      ...(parsed.values ?? {}),
+    };
+  } catch {
+    window.localStorage.removeItem(DRAFT_KEY);
+    return empty;
+  }
+}
 
 type Props = {
   properties: Property[];
@@ -34,11 +88,19 @@ function enumerateDates(startIso: string, endIso: string): string[] {
 }
 
 export function SchedulingForm({ properties, unavailableRanges }: Props) {
-  const [state, formAction, pending] = useActionState(submitScheduleRequest, initial);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [approvalCode, setApprovalCode] = useState("");
-  const [propertyId, setPropertyId] = useState("");
+  const draft = loadDraftValues();
+  const [, formAction, pending] = useActionState(submitScheduleRequest, initial);
+  const [startDate, setStartDate] = useState(draft.startDate);
+  const [endDate, setEndDate] = useState(draft.endDate);
+  const [approvalCode, setApprovalCode] = useState(draft.approvalCode);
+  const [propertyId, setPropertyId] = useState(draft.propertyId);
+  const [stayType, setStayType] = useState(draft.stayType);
+  const [groupSize, setGroupSize] = useState(draft.groupSize);
+  const [timeSlot, setTimeSlot] = useState(draft.timeSlot);
+  const [fullName, setFullName] = useState(draft.fullName);
+  const [email, setEmail] = useState(draft.email);
+  const [phone, setPhone] = useState(draft.phone);
+  const [notes, setNotes] = useState(draft.notes);
 
   const today = toISODateLocal(new Date());
   const endMin = startDate || today;
@@ -50,19 +112,43 @@ export function SchedulingForm({ properties, unavailableRanges }: Props) {
       .flatMap((r) => enumerateDates(r.requested_date, r.requested_end_date));
   }, [propertyId, unavailableRanges]);
 
-  const canSubmit = !!(propertyId && startDate && endDate && approvalCode.trim()) && !pending;
+  const selectedProperty = useMemo(
+    () => properties.find((p) => p.id === propertyId) ?? null,
+    [properties, propertyId]
+  );
+  const isThirtyAcreField = selectedProperty?.slug === "catskills-orchard-vineyard-30-acres";
+  const isFiftyAcreWoodland = selectedProperty?.slug === "catskills-woodland-camping-50-acres";
+  const isMarinaGrande = selectedProperty?.slug === "marina-grande-marina-tower-2406";
+  const supportsDayPassPricing = isThirtyAcreField || isFiftyAcreWoodland;
+
+  const canSubmit = !!(propertyId && startDate && endDate && approvalCode.trim() && stayType) && !pending;
+
+  useEffect(() => {
+    try {
+      const payload = {
+        savedAt: Date.now(),
+        values: {
+          propertyId,
+          startDate,
+          endDate,
+          approvalCode,
+          stayType,
+          groupSize,
+          timeSlot,
+          fullName,
+          email,
+          phone,
+          notes,
+        },
+      };
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
+    } catch {
+      // Ignore localStorage write failures.
+    }
+  }, [propertyId, startDate, endDate, approvalCode, stayType, groupSize, timeSlot, fullName, email, phone, notes]);
 
   return (
     <form action={formAction} className="space-y-10">
-      {state && (
-        <div
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900"
-          role="alert"
-        >
-          {state.error}
-        </div>
-      )}
-
       <section className="space-y-3">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted)]">
           Property
@@ -89,6 +175,8 @@ export function SchedulingForm({ properties, unavailableRanges }: Props) {
             if (endDate && nextBlockedDates.includes(endDate)) {
               setEndDate("");
             }
+            setStayType("");
+            setGroupSize("1");
           }}
           className="w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3.5 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
         >
@@ -161,6 +249,66 @@ export function SchedulingForm({ properties, unavailableRanges }: Props) {
       </section>
 
       <section className="space-y-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted)]">Stay details</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="stay_type" className="block text-sm font-medium text-[var(--brand-ink)]">
+              Stay type <span className="text-red-600">*</span>
+            </label>
+            <select
+              id="stay_type"
+              name="stay_type"
+              required
+              value={stayType}
+              onChange={(e) => setStayType(e.target.value)}
+              className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
+            >
+              <option value="">Select stay type…</option>
+              {isThirtyAcreField ? (
+                <option value="day-pass">Day pass (5:00 AM to 10:00 PM)</option>
+              ) : isFiftyAcreWoodland ? (
+                <>
+                  <option value="monthly">Monthly</option>
+                  <option value="nightly">Overnight</option>
+                  <option value="day-pass">Day pass (5:00 AM to 10:00 PM)</option>
+                </>
+              ) : isMarinaGrande ? (
+                <>
+                  <option value="monthly">Monthly</option>
+                  <option value="nightly">Nightly</option>
+                </>
+              ) : (
+                <>
+                  <option value="nightly">Nightly</option>
+                  <option value="monthly">Monthly</option>
+                </>
+              )}
+            </select>
+          </div>
+          {supportsDayPassPricing && stayType === "day-pass" && (
+            <div>
+              <label htmlFor="group_size" className="block text-sm font-medium text-[var(--brand-ink)]">
+                Group size
+              </label>
+              <input
+                id="group_size"
+                name="group_size"
+                type="number"
+                min={1}
+                step={1}
+                value={groupSize}
+                onChange={(e) => setGroupSize(e.target.value)}
+                className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
+              />
+              <p className="mt-1 text-xs text-[var(--muted)]">
+                Day pass pricing: $200 up to 15 people, then $10 per person after 15.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="space-y-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--muted)]">
           How to reach you
         </h2>
@@ -181,6 +329,12 @@ export function SchedulingForm({ properties, unavailableRanges }: Props) {
           <p className="mt-1 text-xs text-[var(--muted)]">
             Scheduling requires an approved tenant code.
           </p>
+          <p className="mt-2 text-xs text-[var(--muted)]">
+            Need approval first?{" "}
+            <Link href="/portal" className="font-medium text-[var(--brand-deep)] hover:underline">
+              Visit the Tenant Portal to request a tenant approval code.
+            </Link>
+          </p>
         </div>
         <div>
           <label htmlFor="time_slot" className="block text-sm font-medium text-[var(--brand-ink)]">
@@ -190,6 +344,8 @@ export function SchedulingForm({ properties, unavailableRanges }: Props) {
             id="time_slot"
             name="time_slot"
             required
+            value={timeSlot}
+            onChange={(e) => setTimeSlot(e.target.value)}
             className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
           >
             <option value="">Choose a time</option>
@@ -211,6 +367,8 @@ export function SchedulingForm({ properties, unavailableRanges }: Props) {
               type="text"
               required
               autoComplete="name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
             />
           </div>
@@ -224,6 +382,8 @@ export function SchedulingForm({ properties, unavailableRanges }: Props) {
               type="email"
               required
               autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
             />
           </div>
@@ -238,6 +398,8 @@ export function SchedulingForm({ properties, unavailableRanges }: Props) {
             type="tel"
             required
             autoComplete="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             className="mt-1.5 w-full max-w-md rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
           />
         </div>
@@ -251,6 +413,8 @@ export function SchedulingForm({ properties, unavailableRanges }: Props) {
           id="notes"
           name="notes"
           rows={3}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
           placeholder="Lease type, group size, flexibility on dates, questions for the team…"
           className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
         />

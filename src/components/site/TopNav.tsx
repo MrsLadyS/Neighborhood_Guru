@@ -6,13 +6,13 @@ import { usePathname } from "next/navigation";
 const items = [
   { href: "/properties", label: "Properties" },
   { href: "/schedule", label: "Schedule" },
-  { href: "/register", label: "Tenant application" },
+  { href: "/portal", label: "Tenant portal" },
 ] as const;
 
 function linkActive(pathname: string | null, href: string): boolean {
   if (!pathname) return false;
   if (href === "/properties") return pathname === "/properties" || pathname.startsWith("/properties/");
-  if (href === "/register") return pathname === "/register" || pathname.startsWith("/register/");
+  if (href === "/portal") return pathname === "/portal" || pathname.startsWith("/portal/");
   if (href === "/schedule") return pathname === "/schedule" || pathname.startsWith("/schedule/");
   return pathname === href;
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { normalizeGalleryUrls } from "@/lib/properties";
+import { pricingSummaryForSlug } from "@/lib/pricing";
 import type { Property } from "@/types/database";
 
 type Props = { property: Property };
@@ -8,6 +9,7 @@ type Props = { property: Property };
 export function PropertyCard({ property: p }: Props) {
   const fallback = normalizeGalleryUrls(p.gallery_urls)[0];
   const preview = p.image_url ?? fallback ?? null;
+  const pricingSummary = p.pricing_summary ?? pricingSummaryForSlug(p.slug);
 
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-white shadow-sm transition hover:border-[var(--brand-deep)]/20 hover:shadow-md">
@@ -43,6 +45,9 @@ export function PropertyCard({ property: p }: Props) {
               ? ` · from $${(p.monthly_rent_cents / 100).toLocaleString()}/mo`
               : ""}
           </p>
+        )}
+        {pricingSummary && (
+          <p className="mt-2 text-sm text-[var(--brand-accent-dark)]">{pricingSummary}</p>
         )}
         <Link
           href={`/properties/${p.slug}`}

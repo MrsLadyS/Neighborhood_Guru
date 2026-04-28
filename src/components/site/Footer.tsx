@@ -34,8 +34,8 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/register" className="text-[var(--brand-ink)] hover:underline">
-                Tenant application
+              <Link href="/portal" className="text-[var(--brand-ink)] hover:underline">
+                Tenant portal
               </Link>
             </li>
           </ul>

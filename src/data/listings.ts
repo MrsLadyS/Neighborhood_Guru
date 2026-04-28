@@ -17,13 +17,13 @@ Curated stays and adventures are awaiting your arrival. Open any listing for ful
 
 const WOODLAND_DESCRIPTION = `Fifty acres of heavily wooded land—maple-dominant hardwoods—with a heavenly, quiet canopy. Neighborhood Guru is planning guided stays built around camping, seasonal foraging trips, and low-impact outdoor experiences.
 
-Just outside New York City with easy reach from the metro area, the parcel sits roughly 15 minutes from Resorts World Catskills (hotel and casino) in the Sullivan County / Monticello area—ideal for pairing a wilderness stay with dining, entertainment, or a show when you want it.
+Just outside New York City with easy reach from the metro area, the parcel sits in Greenfield Park, NY, roughly 15 minutes from Resorts World Catskills (hotel and casino)—ideal for pairing a wilderness stay with dining, entertainment, or a show when you want it.
 
 Wildlife and seasonal harvests are part of the draw: think blueberry picking, mushroom foraging, wild turkey, whitetail deer in season, and maple syrup tapping when the sap runs. Activities follow land rules, seasons, and safety—details provided when you book.
 
 Gallery images highlight the experience—wild blueberries, mushrooms, whitetail, wild turkey (tom with hen and young), sugar maple tapping with bucket, and more—illustrative art for the site until your on-site photos are added.`;
 
-const ORCHARD_DESCRIPTION = `Thirty acres in the same Sullivan County / Monticello corridor as our larger woodland parcel—close enough for Resorts World Catskills and valley towns, but carved out for open sky and long sightlines. Locals call the ridgeline views “million-mile”—layers of ridge and valley fading into the distance on clear days.
+const ORCHARD_DESCRIPTION = `Thirty acres in the same Greenfield Park, NY corridor as our larger woodland parcel—close enough for Resorts World Catskills and valley towns, but carved out for open sky and long sightlines. Locals call the ridgeline views “million-mile”—layers of ridge and valley fading into the distance on clear days.
 
 This holding centers on a mixed “fruit salad” orchard (diverse fruiting trees and brambles in season), working vineyard rows, and day excursions built around fruit picking when the calendar allows (weather and crop permitting). Pair vineyard walks with harvest mornings when offerings line up.
 
@@ -49,6 +49,7 @@ export const STATIC_PROPERTIES: Property[] = [
     description: MARINA_DESCRIPTION,
     floor_plan_url:
       "https://drive.google.com/file/d/0B0u8B4-sXBCGaGhUbEZ2WTFQWUk/view?usp=sharing",
+    pricing_summary: "$12,000/month.",
     gallery_urls: [
       "/images/properties/marina-grande-marina-tower-2406/mg-sideview.png",
       "/images/properties/marina-grande-marina-tower-2406/mg-view-2.png",
@@ -61,7 +62,7 @@ export const STATIC_PROPERTIES: Property[] = [
     name: "50-Acre Maple Woodland Retreat",
     unit_label: "50 acres · camping · foraging · seasonal stays",
     address_line: "Private wooded parcel — directions after booking",
-    city: "Monticello",
+    city: "Greenfield Park",
     region: "NY",
     postal_code: "12701",
     monthly_rent_cents: null,
@@ -71,6 +72,8 @@ export const STATIC_PROPERTIES: Property[] = [
     image_url: "/images/properties/catskills-woodland-50ac/hero-blueberry-bushes.jpg",
     description: WOODLAND_DESCRIPTION,
     floor_plan_url: null,
+    pricing_summary:
+      "Monthly: $5,500. Overnight: $250/night. Day pass (5:00 AM–10:00 PM): $200 up to 15 people, then $10/person after 15.",
     gallery_urls: [
       "/images/properties/catskills-woodland-50ac/hero-blueberry-bushes.jpg",
       "/images/properties/catskills-woodland-50ac/gallery-chicken-of-the-woods.jpg",
@@ -87,7 +90,7 @@ export const STATIC_PROPERTIES: Property[] = [
     name: "30-Acre Orchard, Vineyard & Ridge Views",
     unit_label: "30 acres · orchard · vineyard · towers · birding · day excursions",
     address_line: "Private parcel — directions after booking",
-    city: "Monticello",
+    city: "Greenfield Park",
     region: "NY",
     postal_code: "12701",
     monthly_rent_cents: null,
@@ -98,6 +101,8 @@ export const STATIC_PROPERTIES: Property[] = [
       "/images/properties/catskills-orchard-vineyard-30ac/listing-mountaintop-view-catskills.jpg",
     description: ORCHARD_DESCRIPTION,
     floor_plan_url: null,
+    pricing_summary:
+      "Day pass (5:00 AM–10:00 PM): $200 up to 15 people, then $10/person after 15.",
     gallery_urls: [
       "/images/properties/catskills-orchard-vineyard-30ac/hero-ridgetop-view.jpg",
       "/images/properties/catskills-orchard-vineyard-30ac/gallery-lookout-towers-birding.jpg",

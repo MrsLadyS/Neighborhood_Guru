@@ -7,7 +7,7 @@ type Props = {
 
 export default async function ScheduleNextStepPage({ searchParams }: Props) {
   const { type } = await searchParams;
-  const isFamily = type === "family";
+  const isApprovedRate = type === "family";
 
   return (
     <Shell>
@@ -21,16 +21,16 @@ export default async function ScheduleNextStepPage({ searchParams }: Props) {
               Request received
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-[var(--muted)]">
-              {isFamily
-                ? "Your family discount request is auto-approved. Continue to payment to finalize your booking details."
+              {isApprovedRate
+                ? "Your approved-rate request is confirmed. Continue to payment to finalize your booking details."
                 : "Your schedule request was submitted successfully. Your tenant approval code will be reviewed and our team will follow up with next instructions."}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                href={isFamily ? "/pay" : "/properties"}
+                href={isApprovedRate ? "/pay" : "/properties"}
                 className="inline-flex items-center justify-center rounded-full bg-[var(--brand-deep)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--brand-deep)]/90"
               >
-                {isFamily ? "Continue to payment" : "View properties"}
+                {isApprovedRate ? "Continue to payment" : "View properties"}
               </Link>
               <Link
                 href="/schedule"

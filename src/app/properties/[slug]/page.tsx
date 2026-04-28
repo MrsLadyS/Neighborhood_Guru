@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Shell } from "@/components/site/Shell";
 import { getPropertyBySlug } from "@/lib/get-properties";
 import { normalizeGalleryUrls } from "@/lib/properties";
+import { pricingSummaryForSlug } from "@/lib/pricing";
 import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -33,6 +34,7 @@ export default async function PropertyDetailPage({ params }: Props) {
 
   const paragraphs =
     raw.description?.split(/\n\n+/).map((s) => s.trim()).filter(Boolean) ?? [];
+  const pricingSummary = raw.pricing_summary ?? pricingSummaryForSlug(raw.slug);
   const floorPlanImage =
     raw.slug === "marina-grande-marina-tower-2406"
       ? "/images/properties/marina-grande-marina-tower-2406/floor-plan-stack-06.jpg"
@@ -65,7 +67,12 @@ export default async function PropertyDetailPage({ params }: Props) {
                 {raw.bedrooms} bed · {raw.bathrooms != null ? `${raw.bathrooms} bath` : "—"}
                 {raw.monthly_rent_cents != null
                   ? ` · from $${(raw.monthly_rent_cents / 100).toLocaleString()}/mo`
-                  : " · inquire for rates"}
+                  : ""}
+              </p>
+            )}
+            {pricingSummary && (
+              <p className="mt-2 text-sm font-medium text-[var(--brand-accent-dark)]">
+                Pricing: {pricingSummary}
               </p>
             )}
           </div>

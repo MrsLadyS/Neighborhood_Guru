@@ -84,6 +84,50 @@ create table if not exists public.tenant_registrations (
   created_at timestamptz not null default now()
 );
 
+create or replace function public.get_unavailable_ranges()
+returns table (
+  property_id uuid,
+  requested_date date,
+  requested_end_date date
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select
+    b.property_id,
+    b.requested_date,
+    b.requested_end_date
+  from public.property_bookings b
+  where b.status in ('pending', 'confirmed')
+    and b.property_id is not null
+    and b.requested_end_date is not null;
+$$;
+
+create or replace function public.get_tenant_portal_bookings(p_email text, p_code text)
+returns table (
+  property_id uuid,
+  requested_date date,
+  requested_end_date date,
+  status text,
+  created_at timestamptz
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select
+    b.property_id,
+    b.requested_date,
+    b.requested_end_date,
+    b.status,
+    b.created_at
+  from public.property_bookings b
+  where lower(b.email) = lower(p_email)
+    and lower(coalesce(b.tenant_approval_code, '')) = lower(p_code)
+  order by b.created_at desc;
+$$;
+
 alter table public.properties enable row level security;
 alter table public.property_bookings enable row level security;
 alter table public.tenant_registrations enable row level security;
@@ -98,6 +142,8 @@ revoke all on table public.tenant_registrations from public, anon, authenticated
 grant select on table public.properties to anon, authenticated;
 grant insert on table public.property_bookings to anon, authenticated;
 grant insert on table public.tenant_registrations to anon, authenticated;
+grant execute on function public.get_unavailable_ranges() to anon, authenticated, service_role;
+grant execute on function public.get_tenant_portal_bookings(text, text) to anon, authenticated, service_role;
 
 -- Public read for featured listings (optional). Restrict if you only use service role in dashboard.
 create policy "properties_select_public"

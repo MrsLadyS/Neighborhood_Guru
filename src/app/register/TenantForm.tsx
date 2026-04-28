@@ -3,7 +3,6 @@
 import { useActionState, useEffect } from "react";
 import { useState } from "react";
 import { submitTenantRegistration, type TenantState } from "@/app/actions/tenants";
-import { INCOME_RANGES } from "@/lib/constants";
 
 const initial: TenantState | null = null;
 
@@ -160,38 +159,6 @@ export function TenantForm() {
             autoComplete="street-address"
             className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
           />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label htmlFor="employer" className="block text-sm font-medium text-[var(--brand-ink)]">
-              Employer / school
-            </label>
-            <input
-              id="employer"
-              name="employer"
-              type="text"
-              className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="monthly_income_range"
-              className="block text-sm font-medium text-[var(--brand-ink)]"
-            >
-              Household monthly income (range)
-            </label>
-            <select
-              id="monthly_income_range"
-              name="monthly_income_range"
-              className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-white px-4 py-3 text-[var(--brand-ink)] shadow-sm focus:border-[var(--brand-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)]/30"
-            >
-              {INCOME_RANGES.map((r) => (
-                <option key={r.value || "empty"} value={r.value}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

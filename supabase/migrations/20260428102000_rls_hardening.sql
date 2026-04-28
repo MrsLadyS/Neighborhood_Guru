@@ -17,6 +17,8 @@ revoke all on table public.tenant_registrations from public, anon, authenticated
 grant select on table public.properties to anon, authenticated;
 grant insert on table public.property_bookings to anon, authenticated;
 grant insert on table public.tenant_registrations to anon, authenticated;
+grant execute on function public.get_unavailable_ranges() to anon, authenticated, service_role;
+grant execute on function public.get_tenant_portal_bookings(text, text) to anon, authenticated, service_role;
 
 drop policy if exists "properties_select_public" on public.properties;
 create policy "properties_select_public"

@@ -68,7 +68,7 @@ on conflict (slug) do update set
   floor_plan_url = excluded.floor_plan_url,
   gallery_urls = excluded.gallery_urls;
 
--- 50-acre Catskills-area woodland / camping (Monticello, NY — near Resorts World Catskills)
+-- 50-acre Catskills-area woodland / camping (Greenfield Park, NY — near Resorts World Catskills)
 -- Images: public/images/properties/catskills-woodland-50ac/
 
 insert into public.properties (
@@ -93,7 +93,7 @@ values (
   '50-Acre Maple Woodland Retreat',
   '50 acres · camping · foraging · seasonal stays',
   'Private wooded parcel — directions after booking',
-  'Monticello',
+  'Greenfield Park',
   'NY',
   '12701',
   null,
@@ -104,7 +104,7 @@ values (
   $wood$
 Fifty acres of heavily wooded land—maple-dominant hardwoods—with a heavenly, quiet canopy. Neighborhood Guru is planning guided stays built around camping, seasonal foraging trips, and low-impact outdoor experiences.
 
-Just outside New York City with easy reach from the metro area, the parcel sits roughly 15 minutes from Resorts World Catskills (hotel and casino) in the Sullivan County / Monticello area—ideal for pairing a wilderness stay with dining, entertainment, or a show when you want it.
+Just outside New York City with easy reach from the metro area, the parcel sits in Greenfield Park, NY, roughly 15 minutes from Resorts World Catskills (hotel and casino)—ideal for pairing a wilderness stay with dining, entertainment, or a show when you want it.
 
 Wildlife and seasonal harvests are part of the draw: think blueberry picking, mushroom foraging, wild turkey, whitetail deer in season, and maple syrup tapping when the sap runs. Activities follow land rules, seasons, and safety—details provided when you book.
 
@@ -136,7 +136,7 @@ on conflict (slug) do update set
   floor_plan_url = excluded.floor_plan_url,
   gallery_urls = excluded.gallery_urls;
 
--- 30-acre Catskills-area orchard / vineyard / towers (Monticello, NY — companion to 50ac woodland)
+-- 30-acre Catskills-area orchard / vineyard / towers (Greenfield Park, NY — companion to 50ac woodland)
 -- Images: public/images/properties/catskills-orchard-vineyard-30ac/
 
 insert into public.properties (
@@ -161,7 +161,7 @@ values (
   '30-Acre Orchard, Vineyard & Ridge Views',
   '30 acres · orchard · vineyard · towers · birding · day excursions',
   'Private parcel — directions after booking',
-  'Monticello',
+  'Greenfield Park',
   'NY',
   '12701',
   null,
@@ -170,7 +170,7 @@ values (
   true,
   '/images/properties/catskills-orchard-vineyard-30ac/listing-mountaintop-view-catskills.jpg',
   $orch$
-Thirty acres in the same Sullivan County / Monticello corridor as our larger woodland parcel—close enough for Resorts World Catskills and valley towns, but carved out for open sky and long sightlines. Locals call the ridgeline views “million-mile”—layers of ridge and valley fading into the distance on clear days.
+Thirty acres in the same Greenfield Park, NY corridor as our larger woodland parcel—close enough for Resorts World Catskills and valley towns, but carved out for open sky and long sightlines. Locals call the ridgeline views “million-mile”—layers of ridge and valley fading into the distance on clear days.
 
 This holding centers on a mixed “fruit salad” orchard (diverse fruiting trees and brambles in season), working vineyard rows, and day excursions built around fruit picking when the calendar allows (weather and crop permitting). Pair vineyard walks with harvest mornings when offerings line up.
 

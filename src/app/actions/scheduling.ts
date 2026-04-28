@@ -29,6 +29,8 @@ export async function submitScheduleRequest(
   const time_slot = String(formData.get("time_slot") ?? "").trim();
   const property_id = String(formData.get("property_id") ?? "").trim();
   const endRaw = String(formData.get("rental_end_date") ?? "").trim();
+  const stayType = String(formData.get("stay_type") ?? "").trim();
+  const groupSizeRaw = String(formData.get("group_size") ?? "").trim();
   const notesRaw = String(formData.get("notes") ?? "").trim();
 
   if (!full_name || !email || !phone || !requested_date || !time_slot || !tenantApprovalCodeRaw) {
@@ -37,6 +39,11 @@ export async function submitScheduleRequest(
   if (!property_id) {
     return { ok: false, error: "Please select a property before scheduling dates." };
   }
+  if (!stayType || !["day-pass", "nightly", "monthly"].includes(stayType)) {
+    return { ok: false, error: "Please select a valid stay type." };
+  }
+  const groupSizeParsed = Number.parseInt(groupSizeRaw || "1", 10);
+  const groupSize = Number.isFinite(groupSizeParsed) && groupSizeParsed > 0 ? groupSizeParsed : 1;
   const tenantApprovalCodeNormalized = tenantApprovalCodeRaw.toLowerCase();
   const isFamilyCode = tenantApprovalCodeNormalized === FAMILY_APPROVAL_CODE;
 
@@ -58,6 +65,9 @@ export async function submitScheduleRequest(
   const notes = isFamilyCode
     ? [notesRaw, "[Auto-approved: family discount]"].filter(Boolean).join("\n") || null
     : notesRaw || null;
+  const notesWithStayMeta = [notes, `[Stay type: ${stayType}]`, `[Group size: ${groupSize}]`]
+    .filter(Boolean)
+    .join("\n");
 
   const row: BookingInsert = {
     full_name,
@@ -68,33 +78,10 @@ export async function submitScheduleRequest(
     tenant_approval_code,
     time_slot,
     property_id,
-    notes,
+    notes: notesWithStayMeta || null,
   };
 
   const supabase = await createClient();
-  const { data: overlappingRows, error: overlapError } = await supabase
-    .from("property_bookings")
-    .select("id")
-    .eq("property_id", property_id)
-    .in("status", ["pending", "confirmed"])
-    .lte("requested_date", requested_end_date)
-    .gte("requested_end_date", requested_date)
-    .limit(1);
-  if (overlapError) {
-    console.error(overlapError);
-    return {
-      ok: false,
-      error: "We could not verify date availability. Please try again in a moment.",
-    };
-  }
-  if ((overlappingRows?.length ?? 0) > 0) {
-    return {
-      ok: false,
-      error:
-        "Those dates are no longer available for this property. Please choose another date range.",
-    };
-  }
-
   const { error } = await supabase.from("property_bookings").insert({
     property_id: row.property_id,
     full_name: row.full_name,
@@ -110,8 +97,21 @@ export async function submitScheduleRequest(
 
   if (error) {
     console.error(error);
+    if (error.code === "23P01") {
+      return {
+        ok: false,
+        error:
+          "Those dates are no longer available for this property. Please choose another date range.",
+      };
+    }
     return { ok: false, error: "We could not save your request. Try again or call our office." };
   }
 
-  redirect(`/schedule/next-step?type=${isFamilyCode ? "family" : "tenant"}`);
+  redirect(
+    `/pay?propertyId=${encodeURIComponent(property_id)}&start=${encodeURIComponent(
+      requested_date
+    )}&end=${encodeURIComponent(requested_end_date)}&codeType=${
+      isFamilyCode ? "family" : "tenant"
+    }&stayType=${encodeURIComponent(stayType)}&groupSize=${groupSize}`
+  );
 }

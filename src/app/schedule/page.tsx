@@ -16,23 +16,22 @@ export default async function SchedulePage() {
   const unavailableRanges: { property_id: string; requested_date: string; requested_end_date: string }[] = [];
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
-    const { data } = await supabase
-      .from("property_bookings")
-      .select("property_id, requested_date, requested_end_date")
-      .in("status", ["pending", "confirmed"])
-      .not("property_id", "is", null)
-      .not("requested_end_date", "is", null);
-    for (const row of (data ?? []) as {
-      property_id: string | null;
-      requested_date: string;
-      requested_end_date: string | null;
-    }[]) {
-      if (row.property_id && row.requested_end_date) {
-        unavailableRanges.push({
-          property_id: row.property_id,
-          requested_date: row.requested_date,
-          requested_end_date: row.requested_end_date,
-        });
+    const { data, error } = await supabase.rpc("get_unavailable_ranges");
+    if (error) {
+      console.error("get_unavailable_ranges failed", error);
+    } else {
+      for (const row of (data ?? []) as {
+        property_id: string | null;
+        requested_date: string;
+        requested_end_date: string | null;
+      }[]) {
+        if (row.property_id && row.requested_end_date) {
+          unavailableRanges.push({
+            property_id: row.property_id,
+            requested_date: row.requested_date,
+            requested_end_date: row.requested_end_date,
+          });
+        }
       }
     }
   }
